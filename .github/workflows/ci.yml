@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, task-2 ]
+  pull_request:
+    branches: [ main, task-2 ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: medical_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U user -d medical_db" --health-interval=10s --health-timeout=5s --health-retries=5
+    env:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: medical_db
+      DB_HOST: localhost
+      DB_PORT: 5432
+      API_ID: ${{ secrets.API_ID }}
+      API_HASH: ${{ secrets.API_HASH }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint scripts
+        run: |
+          pip install flake8
+          flake8 scripts/
+
+      - name: Run scraper (dry run)
+        run: |
+          mkdir -p logs data/raw
+          python scripts/scraper.py || true
+
+      - name: Check for dbt project
+        id: dbt-check
+        run: |
+          if [ -d "ethio_medical_dbt" ]; then echo "exists=true" >> $GITHUB_OUTPUT; fi
+
+      - name: Install dbt-postgres
+        if: steps.dbt-check.outputs.exists == 'true'
+        run: |
+          pip install dbt-postgres
+
+      - name: dbt debug
+        if: steps.dbt-check.outputs.exists == 'true'
+        run: |
+          cd ethio_medical_dbt
+          dbt debug
+
+      - name: dbt run
+        if: steps.dbt-check.outputs.exists == 'true'
+        run: |
+          cd ethio_medical_dbt
+          dbt run
