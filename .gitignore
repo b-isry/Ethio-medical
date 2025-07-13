@@ -1,0 +1,23 @@
+# .gitignore
+
+# Python
+__pycache__/
+*.pyc
+venv/
+*.egg-info/
+*.session
+
+# Environment
+.env
+
+# DBT
+.dbt/
+dbt_packages/  
+logs/
+
+# Raw Data
+data/
+
+# IDE files
+.idea/
+.vscode/

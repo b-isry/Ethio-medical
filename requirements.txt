@@ -1,0 +1,22 @@
+# requirements.txt
+
+# --- Data Scraping ---
+telethon
+
+# --- Data Warehouse & API ---
+psycopg2-binary 
+fastapi         
+uvicorn[standard]
+
+# --- Data Transformation ---
+dbt-postgres 
+
+# --- Data Enrichment ---
+ultralytics
+
+# --- Orchestration ---
+dagster
+dagster-webserver
+
+# --- Utilities ---
+python-dotenv 
