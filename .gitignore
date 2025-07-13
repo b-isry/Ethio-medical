@@ -14,6 +14,7 @@ venv/
 .dbt/
 dbt_packages/  
 logs/
+target/
 
 # Raw Data
 data/
