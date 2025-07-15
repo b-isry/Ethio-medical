@@ -44,7 +44,6 @@ jobs:
 
       - name: Lint scripts
         run: |
-          pip install flake8
           flake8 scripts/
 
       - name: Run scraper (dry run)

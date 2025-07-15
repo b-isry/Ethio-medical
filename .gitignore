@@ -19,6 +19,9 @@ target/
 # Raw Data
 data/
 
+# Dagster temp files
+.tmp_dagster_home_akmmvlv5/
+
 # IDE files
 .idea/
 .vscode/
