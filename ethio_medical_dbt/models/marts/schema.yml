@@ -1,24 +1,26 @@
+# ethio_medical_dbt/models/marts/schema.yml
 
 version: 2
 
 models:
-  - name: my_first_dbt_model
-    description: "A starter dbt model"
+  - name: fct_messages
+    description: "The central fact table, containing one row per message."
     columns:
-      - name: id
-        description: "The primary key for this table"
-        data_tests:
+      - name: message_id
+        description: "The unique identifier for a message."
+        tests:
           - unique
           - not_null
 
-  - name: my_second_dbt_model
-    description: "A starter dbt model"
+  - name: dim_channels
+    description: "Dimension table for Telegram channel information."
     columns:
-      - name: id
-        description: "The primary key for this table"
-        data_tests:
+      - name: clean_channel_name
+        description: "The clean, human-readable name of the channel."
+        tests:
           - unique
           - not_null
+
   - name: fct_image_detections
     description: "One row per object detected in an image. Links back to fct_messages via message_id."
     columns:
