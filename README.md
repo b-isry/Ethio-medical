@@ -71,7 +71,7 @@ DB_PORT=5432
 
    ```sh
 
-   git clone <repo-url>
+   git clone (https://github.com/b-isry/Ethio-medical.git)
    cd kara_solutions_elt
    ```
 
