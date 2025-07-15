@@ -70,7 +70,8 @@ async def scrape_channel(client, channel_handle):
         messages_saved += 1
 
         if message.photo:
-            photo_path = await message.download_media(file=output_dir_images)
+            photo_path = await message.download_media(
+                file=os.path.join(output_dir_images, f"{message.id}.jpg"))
             if photo_path:
                 images_saved += 1
                 logging.info(f"Saved image from message {message.id} to {photo_path}")
