@@ -19,3 +19,18 @@ models:
         data_tests:
           - unique
           - not_null
+  - name: fct_image_detections
+    description: "One row per object detected in an image. Links back to fct_messages via message_id."
+    columns:
+      - name: message_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fct_messages')
+              field: message_id
+      - name: detected_object
+        tests:
+          - not_null
+      - name: confidence_score
+        tests:
+          - not_null
