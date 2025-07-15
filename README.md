@@ -1,6 +1,15 @@
+
 # Kara Solutions ELT Project
 
-This project provides an Extract, Load, and Transform (ELT) pipeline for scraping, storing, and analyzing data, with a focus on Telegram channels and PostgreSQL integration. It uses Docker for containerization and dbt for analytics engineering.
+Kara Solutions ELT is a modular pipeline for extracting, loading, and transforming data from Telegram channels into a PostgreSQL database for analytics and reporting. The project leverages Docker for reproducible environments, dbt for analytics engineering, and Python for data collection and orchestration.
+
+## Features
+- Scrape messages and media from multiple Telegram channels
+- Store raw and processed data in a structured data lake
+- Load data into PostgreSQL for further analysis
+- Use dbt for analytics, transformation, and reporting
+- Containerized setup for easy deployment and reproducibility
+
 
 ## Folder Structure
 
@@ -15,41 +24,106 @@ This project provides an Extract, Load, and Transform (ELT) pipeline for scrapin
 └── README.md            # Project documentation
 ```
 
+
 ## Getting Started
 
+
 ### Prerequisites
-- Docker & Docker Compose
-- Telegram API credentials (API_ID, API_HASH)
+- Docker & Docker Compose (for containerized workflow)
+- Telegram API credentials (`API_ID`, `API_HASH`)
 - Python 3.10+ (if running scripts outside Docker)
+- PostgreSQL (runs in Docker by default)
+
+### Environment Variables
+Create a `.env` file in the project root with the following content:
+
+```env
+# Telegram API Credentials
+API_ID=your_telegram_api_id
+API_HASH=your_telegram_api_hash
+
+# Database Credentials
+POSTGRES_USER=user
+POSTGRES_PASSWORD=password
+POSTGRES_DB=medical_db
+DB_HOST=db
+DB_PORT=5432
+```
+
 
 ### Setup
-1. Clone the repository and navigate to the project folder.
-2. Create a `.env` file with your credentials (see example in repo).
+1. Clone the repository and navigate to the project folder:
+   ```sh
+   git clone <repo-url>
+   cd kara_solutions_elt
+   ```
+2. Add your `.env` file as described above.
 3. Build and start the containers:
    ```sh
    docker-compose up --build
    ```
+4. (Optional) Install Python dependencies locally if running scripts outside Docker:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
 
 ### Running the Scraper
 - The main scraping script is at `scripts/scraper.py`.
 - It logs to `logs/scraping.log` and saves data under `data/raw/`.
 - To run the scraper inside the container:
   ```sh
-  docker-compose exec app python scripts/scraper.py
+  docker-compose exec app python scripts/scraper.py  # Run the scraper in the app container
   ```
 
+#### Example: Adding a New Channel
+To scrape a new Telegram channel, add its handle to the `CHANNELS` list in `scripts/scraper.py`:
+
+```python
+CHANNELS = [
+    'lobelia4cosmetics',  # Example channel 1
+    'tikvahpharma',       # Example channel 2
+    # Add more channels as needed
+]
+```
+
+
 ### Database
-- PostgreSQL runs in the `db` service.
+- PostgreSQL runs in the `db` service (see `docker-compose.yml`).
 - Connection details are set via `.env` and used by dbt and scripts.
+- Data is persisted in a Docker volume (`postgres_data`).
 
-### Analytics
+
+### Analytics & dbt
 - dbt project files should be placed in a subfolder (e.g., `ethio_medical_dbt/`).
-- Use dbt commands inside the container for analytics workflows.
+- Use dbt commands inside the container for analytics workflows:
+  ```sh
+  docker-compose exec app bash
+  cd ethio_medical_dbt
+  dbt debug    # Test dbt connection
+  dbt run      # Run dbt models
+  ```
 
-## Notes
-- Update `requirements.txt` to add Python dependencies.
-- Use the `notebooks/` folder for data exploration and prototyping.
-- All logs are stored in the `logs/` directory (created automatically).
+
+## Usage Examples
+
+#### Running Jupyter Notebooks
+You can use the `notebooks/` folder for data exploration. To start a Jupyter notebook server (if installed):
+```sh
+docker-compose exec app jupyter notebook --ip=0.0.0.0 --allow-root
+```
+
+#### Troubleshooting
+- If you get a `FileNotFoundError` for logs, ensure the `logs/` directory exists or is created before running scripts.
+- For pip install timeouts, try increasing the timeout or using a different PyPI mirror in the Dockerfile.
+- If dbt reports `git` missing, ensure your Dockerfile installs git before Python dependencies.
+
+## Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+## Support
+For questions or support, please open an issue in this repository.
+
 
 ## License
 MIT License
