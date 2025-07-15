@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: raw_data
+    schema: raw
+    tables:
+      - name: raw_messages
+      - name: raw_image_detections
